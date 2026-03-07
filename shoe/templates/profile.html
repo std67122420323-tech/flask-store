@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mt-5">
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <i class="bi bi-person-circle text-primary" style="font-size: 4rem;"></i>
+                </div>
+                <h3 class="fw-bold mb-4">ตั้งค่าโปรไฟล์</h3>
+                
+                <form method="POST">
+                    <div class="mb-3 text-start">
+                        <label class="form-label fw-bold">ชื่อผู้ใช้ปัจจุบัน</label>
+                        <input type="text" name="username" class="form-control" value="{{ current_user.username }}" required>
+                    </div>
+                    
+                    <div class="mb-4 text-start">
+                        <label class="form-label fw-bold">เปลี่ยนรหัสผ่านใหม่ (ปล่อยว่างไว้ถ้าไม่ต้องการเปลี่ยน)</label>
+                        <input type="password" name="password" class="form-control" placeholder="รหัสผ่านใหม่">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">อัปเดตข้อมูล</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

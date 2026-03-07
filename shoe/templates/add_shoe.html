@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="mb-4 fw-bold text-center">
+                    {{ 'แก้ไขข้อมูลรองเท้า' if shoe else 'เพิ่มรองเท้าใหม่' }}
+                </h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">ชื่อรุ่น (Model)</label>
+                        <input type="text" name="model" class="form-control" value="{{ shoe.model if shoe else '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">แบรนด์ (Brand)</label>
+                        <input type="text" name="brand" class="form-control" value="{{ shoe.brand if shoe else '' }}" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">ราคา (Price)</label>
+                            <input type="number" step="0.01" name="price" class="form-control" value="{{ shoe.price if shoe else '' }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">ไซส์ (Size)</label>
+                            <input type="number" step="0.1" name="size" class="form-control" value="{{ shoe.size if shoe else '' }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">URL รูปภาพรองเท้า</label>
+                        <input type="url" name="img" class="form-control" placeholder="https://example.com/shoe.jpg" value="{{ shoe.img if shoe else '' }}" required>
+                        <div class="form-text">ก๊อปปี้ลิงก์รูปภาพจาก Google หรือเว็บขายรองเท้ามาวางได้เลย</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary py-2">บันทึกข้อมูล</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-light text-muted">ยกเลิก</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

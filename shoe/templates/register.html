@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow border-0 mt-5">
+            <div class="card-body p-5">
+                <h3 class="text-center mb-4">สมัครสมาชิกใหม่</h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">ชื่อผู้ใช้ (Username)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" name="username" class="form-control" placeholder="ตั้งชื่อผู้ใช้" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">รหัสผ่าน (Password)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="ตั้งรหัสผ่าน" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100 py-2">ยืนยันการสมัคร</button>
+                </form>
+                <hr>
+                <p class="text-center mb-0">เป็นสมาชิกอยู่แล้ว? <a href="{{ url_for('login') }}" class="text-decoration-none">เข้าสู่ระบบที่นี่</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
