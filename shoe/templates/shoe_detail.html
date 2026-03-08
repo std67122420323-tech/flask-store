@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+    .detail-wrapper { padding: 40px 0; }
+    
+    /* กรอบรูปภาพหลัก */
+    .main-img-holder {
+        background: white;
+        border-radius: 25px;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        border: 1px solid #f0f0f0;
+        transition: 0.3s;
+    }
+
+    /* ระบบจัดการป้าย Size ให้แยกจากกันและสวยงาม */
+    .size-display-group {
+        display: flex;
+        gap: 15px;
+        margin: 25px 0;
+        flex-wrap: wrap;
+    }
+
+    .info-box {
+        flex: 1;
+        min-width: 140px;
+        background: #fbfbfb;
+        padding: 15px;
+        border-radius: 18px;
+        border-left: 6px solid #212529; /* สีดำพื้นฐาน */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    /* สไตล์พิเศษสำหรับไซส์เสื้อ (สีชมพู KodFlow) */
+    .info-box.shirt-theme {
+        border-left-color: #ff5c8d; 
+        background-color: #fff9fb;
+    }
+
+    .label-title {
+        display: block;
+        color: #888;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .value-bold {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #212529;
+    }
+
+    /* ปุ่ม Back สไตล์ KodFlow */
+    .btn-kodflow-action {
+        background: #212529;
+        color: white;
+        border-radius: 50px;
+        padding: 14px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        display: block;
+        transition: 0.3s;
+        border: none;
+    }
+
+    .btn-kodflow-action:hover {
+        background: #ff5c8d;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 92, 141, 0.3);
+    }
+
+    .thumb-nail {
+        width: 75px;
+        height: 75px;
+        object-fit: cover;
+        border-radius: 12px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.2s;
+    }
+
+    .thumb-nail.active { border-color: #ff5c8d; }
+</style>
+
+<div class="container detail-wrapper">
+    <div class="row g-5 align-items-start">
+        
+        <div class="col-md-7">
+            <div class="main-img-holder shadow-sm mb-3">
+                <img src="{{ shoe.img }}" id="displayImg" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+            </div>
+            
+            <div class="d-flex gap-2 overflow-auto pb-2">
+                <img src="{{ shoe.img }}" class="thumb-nail border active" onclick="swapImg(this)">
+                {% if shoe.additional_images %}
+                    {% for extra in shoe.additional_images %}
+                    <img src="{{ extra.img_url }}" class="thumb-nail border" onclick="swapImg(this)">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb" style="font-size: 0.9rem;">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none text-muted">Store</a></li>
+                    <li class="breadcrumb-item active text-dark fw-bold">{{ shoe.brand }}</li>
+                </ol>
+            </nav>
+
+            <h1 class="fw-bold display-6 mb-1">{{ shoe.model }}</h1>
+            <p class="text-muted fs-5 mb-4">{{ shoe.brand }}</p>
+            
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <h2 class="fw-bold m-0" style="color: #ff5c8d; font-size: 2.4rem;">฿{{ "{:,.0f}".format(shoe.price) }}</h2>
+            </div>
+
+            <hr style="opacity: 0.1;">
+
+            <div class="size-display-group">
+                
+                {# แสดง Shoe Size: จะไม่แสดงถ้าค่าเป็น 0.0 #}
+                {% if shoe.size and shoe.size|float > 0 %}
+                <div class="info-box">
+                    <span class="label-title">Shoe Size</span>
+                    <span class="value-bold">{{ shoe.size }} <small class="fw-normal fs-6">US</small></span>
+                </div>
+                {% endif %}
+
+                {# แสดง Shirt Size: จะแสดงก็ต่อเมื่อมีการเลือกไซส์ที่ไม่ใช่ None #}
+                {% set s_val = shoe.shirt_size | string | trim %}
+                {% if s_val != "" and s_val|lower != "none" and s_val != "None" %}
+                <div class="info-box shirt-theme">
+                    <span class="label-title" style="color: #ff5c8d;">Shirt Size</span>
+                    <span class="value-bold">{{ shoe.shirt_size }}</span>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="d-grid mt-4">
+                <a href="{{ url_for('index') }}" class="btn-kodflow-action shadow-sm">
+                    <i class="bi bi-chevron-left me-2"></i> Back to Collection
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function swapImg(element) {
+        const main = document.getElementById('displayImg');
+        main.style.opacity = '0.5';
+        setTimeout(() => {
+            main.src = element.src;
+            main.style.opacity = '1';
+        }, 100);
+
+        document.querySelectorAll('.thumb-nail').forEach(img => img.classList.remove('active'));
+        element.classList.add('active');
+    }
+</script>
+
+{% endblock %}

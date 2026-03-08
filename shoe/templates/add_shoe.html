@@ -1,43 +1,55 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <h3 class="mb-4 fw-bold text-center">
-                    {{ 'แก้ไขข้อมูลรองเท้า' if shoe else 'เพิ่มรองเท้าใหม่' }}
-                </h3>
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">ชื่อรุ่น (Model)</label>
-                        <input type="text" name="model" class="form-control" value="{{ shoe.model if shoe else '' }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">แบรนด์ (Brand)</label>
-                        <input type="text" name="brand" class="form-control" value="{{ shoe.brand if shoe else '' }}" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">ราคา (Price)</label>
-                            <input type="number" step="0.01" name="price" class="form-control" value="{{ shoe.price if shoe else '' }}" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">ไซส์ (Size)</label>
-                            <input type="number" step="0.1" name="size" class="form-control" value="{{ shoe.size if shoe else '' }}" required>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">URL รูปภาพรองเท้า</label>
-                        <input type="url" name="img" class="form-control" placeholder="https://example.com/shoe.jpg" value="{{ shoe.img if shoe else '' }}" required>
-                        <div class="form-text">ก๊อปปี้ลิงก์รูปภาพจาก Google หรือเว็บขายรองเท้ามาวางได้เลย</div>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary py-2">บันทึกข้อมูล</button>
-                        <a href="{{ url_for('index') }}" class="btn btn-light text-muted">ยกเลิก</a>
-                    </div>
-                </form>
+<div class="container py-5">
+    <div class="card shadow-sm border-0 rounded-4 p-4 mx-auto" style="max-width: 600px;">
+        <h2 class="fw-bold mb-4 text-center">{{ title }}</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Model Name</label>
+                <input type="text" name="model" class="form-control rounded-pill" value="{{ shoe.model if shoe else '' }}" required>
             </div>
-        </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Brand</label>
+                <input type="text" name="brand" class="form-control rounded-pill" value="{{ shoe.brand if shoe else '' }}" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Price (฿)</label>
+                    <input type="number" name="price" class="form-control rounded-pill" value="{{ shoe.price if shoe else '' }}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Shoe Size (US)</label>
+                    <input type="number" step="0.1" name="size" class="form-control rounded-pill" value="{{ shoe.size if shoe else '' }}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Shirt Size</label>
+                    <select name="shirt_size" class="form-select rounded-pill">
+                        <option value="">None</option>
+                        {% for s in ['S', 'M', 'L', 'XL', '2XL'] %}
+                        <option value="{{ s }}" {% if shoe and shoe.shirt_size == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Main Image URL (รูปที่ 1)</label>
+                <input type="text" name="img" class="form-control rounded-pill" value="{{ shoe.img if shoe else '' }}" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Additional Images (รูปที่ 2-5)</label>
+                <textarea name="extra_imgs" class="form-control rounded-4" rows="5" placeholder="วางลิงก์รูปที่ 2&#10;วางลิงก์รูปที่ 3&#10;วางลิงก์รูปที่ 4&#10;วางลิงก์รูปที่ 5">{{ extra_imgs if extra_imgs else '' }}</textarea>
+                <small class="text-muted">วาง 1 ลิงก์ต่อ 1 บรรทัด (กด Enter เพื่อขึ้นบรรทัดใหม่)</small>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 shadow-sm">Save Changes</button>
+            <div class="text-center mt-3">
+                <a href="{{ url_for('index') }}" class="text-muted text-decoration-none">Cancel</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

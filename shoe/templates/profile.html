@@ -1,29 +1,98 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0 mt-5">
-            <div class="card-body p-4 text-center">
-                <div class="mb-3">
-                    <i class="bi bi-person-circle text-primary" style="font-size: 4rem;"></i>
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg mt-5 border-0 pink-glass-card">
+            <div class="card-body p-4 p-md-5 text-center">
+                <div class="mb-4 position-relative d-inline-block">
+                    <div class="profile-img-container">
+                        {% if current_user.profile_img %}
+                            <img src="{{ current_user.profile_img }}" 
+                                 class="rounded-circle border border-3 border-white shadow-sm" 
+                                 style="width: 140px; height: 140px; object-fit: cover;"
+                                 alt="Profile"
+                                 onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+                        {% else %}
+                            <div class="rounded-circle bg-white d-flex align-items-center justify-content-center mx-auto border border-white shadow-sm" 
+                                 style="width: 140px; height: 140px;">
+                                <i class="bi bi-person-fill" style="font-size: 4.5rem; color: var(--primary-pink);"></i>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <h3 class="fw-bold mb-4">ตั้งค่าโปรไฟล์</h3>
                 
-                <form method="POST">
-                    <div class="mb-3 text-start">
-                        <label class="form-label fw-bold">ชื่อผู้ใช้ปัจจุบัน</label>
-                        <input type="text" name="username" class="form-control" value="{{ current_user.username }}" required>
+                <h3 class="fw-bold mb-1" style="font-family: 'Orbitron', sans-serif; color: #d81b60;">SYSTEM PROFILE</h3>
+                <p class="text-muted small mb-4">จัดการบัญชีผู้ใช้งานและข้อมูลระบบ</p>
+                
+                <form method="POST" enctype="multipart/form-data" class="text-start">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small" style="color: #f06292;"><i class="bi bi-pc-display me-1"></i> อัปโหลดรูปจากเครื่อง (LOCAL)</label>
+                        <input type="file" name="file_img" class="form-control border-0 shadow-sm bg-white" accept="image/*">
+                        <div class="form-text text-muted small">รองรับนามสกุลไฟล์: .png, .jpg, .jpeg</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small" style="color: #f06292;"><i class="bi bi-link-45deg me-1"></i> ลิงก์รูปภาพ (CLOUD URL)</label>
+                        <input type="url" name="profile_img" class="form-control border-0 shadow-sm bg-white" 
+                               value="{{ current_user.profile_img if current_user.profile_img else '' }}" 
+                               placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <hr class="my-4" style="border-top: 1px solid var(--glass-border);">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-dark">ชื่อผู้ใช้ (USERNAME)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-at"></i></span>
+                            <input type="text" name="username" class="form-control border-0 shadow-sm bg-white" 
+                                   value="{{ current_user.username }}" required>
+                        </div>
                     </div>
                     
-                    <div class="mb-4 text-start">
-                        <label class="form-label fw-bold">เปลี่ยนรหัสผ่านใหม่ (ปล่อยว่างไว้ถ้าไม่ต้องการเปลี่ยน)</label>
-                        <input type="password" name="password" class="form-control" placeholder="รหัสผ่านใหม่">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-dark">รหัสผ่านใหม่ (SECURITY KEY)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-shield-lock"></i></span>
+                            <input type="password" name="password" class="form-control border-0 shadow-sm bg-white" 
+                                   placeholder="ปล่อยว่างหากไม่ต้องการเปลี่ยน">
+                        </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">อัปเดตข้อมูล</button>
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mt-2 shadow-sm">
+                        <i class="bi bi-save2 me-2"></i> UPDATE CORE DATA
+                    </button>
                 </form>
             </div>
         </div>
+        
+        <div class="text-center mt-4 mb-5">
+            <a href="{{ url_for('index') }}" class="text-decoration-none small" style="color: #f06292;">
+                <i class="bi bi-chevron-left me-1"></i> กลับสู่หน้าหลัก
+            </a>
+        </div>
     </div>
 </div>
+
+<style>
+    .pink-glass-card {
+        background: rgba(255, 255, 255, 0.4) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        border-radius: 30px !important;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 133, 162, 0.25);
+        background-color: #fff !important;
+    }
+    
+    .profile-img-container img {
+        transition: transform 0.3s ease;
+    }
+    
+    .profile-img-container:hover img {
+        transform: scale(1.05);
+    }
+</style>
 {% endblock %}

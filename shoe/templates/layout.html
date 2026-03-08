@@ -3,61 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNEAKER STORE - {{ title }}</title>
+    <title>KodFlow Store - {{ title }}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@700&family=Kanit:wght@300;400&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
     <style>
-        body { font-family: 'Kanit', sans-serif; background-color: #f8f9fa; }
-        .navbar-brand { font-weight: 600; letter-spacing: 1px; }
-        .user-badge { background: #343a40; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; }
+        :root {
+            --primary-pink: #ff5c8d;
+            --dark-pink: #d81b60;
+            --text-dark: #333333;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: linear-gradient(135deg, #fdfcfb 0%, #fce4ec 100%);
+            background-attachment: fixed;
+            font-family: 'Inter', 'Kanit', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            height: 70px;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 35px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .brand-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .nav-profile-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-pink {
+            background: var(--primary-pink);
+            color: white;
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-pink:hover {
+            background: var(--dark-pink);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            padding-top: 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="bi bi-reception-4"></i> SNEAKER STORE
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-img">
+                <span class="brand-text">KodFlow <span style="font-weight: 300; opacity: 0.6;">Store</span></span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item me-3">
-                            <span class="user-badge shadow-sm">
-                                <i class="bi bi-person-circle me-1"></i> {{ current_user.username }}
-                            </span>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">คอลเลกชัน</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">ตั้งค่า</a></li>
-                        <li class="nav-item ms-lg-2">
-                            <a class="btn btn-outline-warning btn-sm" href="{{ url_for('logout') }}">ออกจากระบบ</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">เข้าสู่ระบบ</a></li>
-                        <li class="nav-item"><a class="btn btn-primary btn-sm ms-lg-2" href="{{ url_for('register') }}">สมัครสมาชิก</a></li>
-                    {% endif %}
-                </ul>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('index') }}" class="nav-link text-muted small fw-bold d-none d-md-block">Collection</a>
+                    
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-dark small fw-bold d-none d-sm-inline">{{ current_user.username }}</span>
+                        <a href="{{ url_for('profile') }}">
+                            <img src="{{ url_for('static', filename='profile_pics/user_1.png') }}" class="nav-profile-img" alt="Profile">
+                        </a>
+                    </div>
+
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link text-muted fw-bold small me-2">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-pink shadow-sm">Sign Up Free</a>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <main class="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
+                <div class="container mb-4">
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm">
-                        {{ message }}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show border-0 shadow-sm bg-white rounded-4" role="alert">
+                        <small><i class="bi bi-info-circle-fill me-2 text-{{ category }}"></i> {{ message }}</small>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
-        
+
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

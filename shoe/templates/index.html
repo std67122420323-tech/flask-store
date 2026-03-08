@@ -1,47 +1,157 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold"><i class="bi bi-collection"></i> คอลเลกชันของคุณ</h2>
-    <a href="{{ url_for('add_shoe') }}" class="btn btn-dark">
-        <i class="bi bi-plus-lg"></i> เพิ่มรองเท้าใหม่
-    </a>
-</div>
 
-<form class="mb-4" method="GET" action="{{ url_for('index') }}">
-    <div class="input-group shadow-sm">
-        <input type="text" name="search" class="form-control" placeholder="ค้นหาชื่อรุ่นหรือแบรนด์..." value="{{ search_query }}">
-        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> ค้นหา</button>
-    </div>
-</form>
+<style>
+    /* Hero Section */
+    .hero-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        padding: 40px 20px;
+    }
+    .hero-inner {
+        display: flex;
+        align-items: center;
+        gap: 40px; 
+        max-width: 1100px;
+        width: 100%;
+    }
+    .hero-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 4rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 20px;
+    }
+    .hero-img-box {
+        margin-left: 50px; 
+        display: flex;
+        justify-content: flex-start;
+    }
+    .hero-img-box img {
+        max-width: 400px;
+        border-radius: 20px;
+        transform: rotate(-3deg);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for shoe in shoes %}
-    <div class="col">
-        <div class="card h-100 shadow-sm border-0">
-            <img src="{{ shoe.img }}" class="card-img-top" alt="{{ shoe.model }}" style="height: 250px; object-fit: cover;">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-uppercase">{{ shoe.brand }}</h5>
-                <p class="card-text text-muted">{{ shoe.model }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-success fs-6">฿{{ "{:,.2f}".format(shoe.price) }}</span>
-                    <span class="text-muted small">Size: {{ shoe.size }}</span>
-                </div>
+    /* Product Card */
+    .shoe-card {
+        border: none;
+        border-radius: 25px;
+        background: white;
+        transition: 0.3s;
+        overflow: hidden;
+        padding: 15px;
+    }
+    .shoe-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    .shoe-img-container {
+        width: 100%;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 20px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    .shoe-img-container img {
+        max-width: 95%;
+        max-height: 95%;
+        object-fit: contain;
+    }
+    .btn-pink {
+        background-color: #ff5c8d;
+        color: white;
+        border-radius: 50px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-pink:hover {
+        background-color: #e64a79;
+        color: white;
+    }
+</style>
+
+<div class="container">
+    <section class="hero-wrapper">
+        <div class="hero-inner">
+            <div class="hero-text text-start">
+                <h1 class="hero-title">KodFlow<br><span style="color: #ff5c8d;">STORE</span></h1>
+                <p class="text-muted fs-5">Manage your collection seamlessly.</p>
             </div>
-            <div class="card-footer bg-white border-0 pb-3">
-                <div class="btn-group w-100">
-                    <a href="{{ url_for('update_shoe', shoe_id=shoe.id) }}" class="btn btn-outline-secondary btn-sm">แก้ไข</a>
-                    <form action="{{ url_for('delete_shoe', shoe_id=shoe.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('ยืนยันการลบ?')">ลบ</button>
-                    </form>
-                </div>
+            <div class="hero-img-box text-center">
+                <img src="{{ url_for('static', filename='images/image.png') }}" 
+                     onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600';">
             </div>
         </div>
-    </div>
-    {% else %}
-    <div class="col-12 text-center py-5">
-        <i class="bi bi-emoji-smile text-muted" style="font-size: 3rem;"></i>
-        <p class="mt-3 text-muted">ยังไม่มีรองเท้าในระบบ ลองเพิ่มคู่แรกของคุณดูสิ!</p>
-    </div>
-    {% endfor %}
+    </section>
+
+    <section id="collection" class="pb-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold mb-0" style="color: #ff5c8d;">KODFLOW COLLECTION</h2>
+                <p class="text-muted">Explore {{ shoes|length }} items in the flow</p>
+            </div>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('add_shoe') }}" class="btn btn-pink shadow-sm px-4 rounded-pill">+ Add New Item</a>
+            {% endif %}
+        </div>
+        
+        <div class="row g-4">
+            {% for shoe in shoes %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card shoe-card shadow-sm h-100">
+                    <div class="shoe-img-container">
+                        <img src="{{ shoe.img }}" 
+                             onerror="this.src='https://via.placeholder.com/400x300?text=No+Image';" 
+                             alt="{{ shoe.model }}">
+                    </div>
+                    <div class="card-body text-center p-0">
+                        <small class="text-danger fw-bold text-uppercase" style="font-size: 0.7rem;">{{ shoe.brand }}</small>
+                        <h6 class="card-title fw-bold mb-2">{{ shoe.model }}</h6>
+                        
+                        <div class="mb-3">
+                            <div class="bg-light rounded-pill py-1 mb-2">
+                                <span class="fw-bold text-dark">฿{{ "{:,.0f}".format(shoe.price) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-center gap-1">
+                                <span class="badge bg-white text-muted border rounded-pill" style="font-size: 0.65rem;">
+                                    Size: {{ shoe.size }}
+                                </span>
+                                {# ตรวจสอบค่า shirt_size จากฐานข้อมูล #}
+                                {% if shoe.shirt_size and shoe.shirt_size != 'None' %}
+                                <span class="badge bg-dark text-white rounded-pill" style="font-size: 0.65rem;">
+                                    Shirt: {{ shoe.shirt_size }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ url_for('shoe_detail', shoe_id=shoe.id) }}" class="btn btn-sm btn-dark w-100 rounded-pill">View Detail</a>
+                            
+                            {% if current_user.is_authenticated and shoe.user_id == current_user.id %}
+                                <div class="d-flex gap-1">
+                                    <a href="{{ url_for('update_shoe', shoe_id=shoe.id) }}" class="btn btn-outline-secondary w-100 rounded-pill py-1" style="font-size: 0.75rem;">Edit</a>
+                                    <form action="{{ url_for('delete_shoe', shoe_id=shoe.id) }}" method="POST" class="w-100">
+                                        <button type="submit" class="btn btn-outline-danger w-100 rounded-pill py-1" style="font-size: 0.75rem;" onclick="return confirm('Delete this item?')">Delete</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
 </div>
+
 {% endblock %}
