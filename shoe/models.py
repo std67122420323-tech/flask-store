@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
     shoes = db.relationship('Shoe', backref='owner', lazy=True)
 
 class Shoe(db.Model):
+    __table_args__ = {'extend_existing': True} 
     id = db.Column(db.Integer, primary_key=True)
     model = db.Column(db.String(100), nullable=False)
     brand = db.Column(db.String(100), nullable=False)
@@ -20,13 +21,13 @@ class Shoe(db.Model):
     img = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
-    size = db.Column(db.Float, nullable=False) 
-    shirt_size = db.Column(db.String(10), nullable=True) 
-    
+    size = db.Column(db.String(200), nullable=True) 
+    shirt_size = db.Column(db.String(20), nullable=True) 
     
     additional_images = db.relationship('ShoeImage', backref='shoe', lazy=True, cascade="all, delete-orphan")
 
 class ShoeImage(db.Model):
+    __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     img_url = db.Column(db.String(500), nullable=False)
     shoe_id = db.Column(db.Integer, db.ForeignKey('shoe.id'), nullable=False)

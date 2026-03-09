@@ -96,7 +96,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
 @app.route('/add_shoe', methods=['GET', 'POST'])
 @login_required
 def add_shoe():
@@ -106,7 +105,7 @@ def add_shoe():
                 model=request.form.get('model'),
                 brand=request.form.get('brand'),
                 price=float(request.form.get('price')),
-                size=float(request.form.get('size')),
+                size=request.form.get('size'), 
                 shirt_size=request.form.get('shirt_size'),  
                 img=request.form.get('img'), 
                 user_id=current_user.id
@@ -121,6 +120,7 @@ def add_shoe():
                     db.session.add(new_img)
 
             db.session.commit()
+            flash('เพิ่มสินค้าเรียบร้อยแล้ว!', 'success')
             return redirect(url_for('index'))
         except Exception as e:
             db.session.rollback()
@@ -138,7 +138,7 @@ def update_shoe(shoe_id):
         shoe.model = request.form.get('model')
         shoe.brand = request.form.get('brand')
         shoe.price = float(request.form.get('price'))
-        shoe.size = float(request.form.get('size'))
+        shoe.size = request.form.get('size') 
         shoe.shirt_size = request.form.get('shirt_size')  
         shoe.img = request.form.get('img') 
 
@@ -150,6 +150,7 @@ def update_shoe(shoe_id):
                 db.session.add(new_img)
 
         db.session.commit()
+        flash('แก้ไขข้อมูลสำเร็จ!', 'success')
         return redirect(url_for('index'))
     
     current_extra_imgs = "\n".join([img.img_url for img in shoe.additional_images])
@@ -164,3 +165,15 @@ def delete_shoe(shoe_id):
         db.session.commit()
         flash('Shoe deleted!', 'success')
     return redirect(url_for('index'))
+
+@app.route('/checkout/<int:shoe_id>', methods=['POST'])
+@login_required
+def checkout(shoe_id):
+    shoe = Shoe.query.get_or_404(shoe_id)
+    selected_size = request.form.get('selected_size')
+    
+    if not selected_size or selected_size == "None":
+        flash('กรุณาเลือกไซส์ก่อนสั่งซื้อ', 'warning')
+        return redirect(url_for('shoe_detail', shoe_id=shoe.id))
+        
+    return render_template('checkout.html', shoe=shoe, size=selected_size, title="Checkout")

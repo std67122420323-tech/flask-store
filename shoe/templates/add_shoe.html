@@ -1,55 +1,88 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container py-5">
-    <div class="card shadow-sm border-0 rounded-4 p-4 mx-auto" style="max-width: 600px;">
-        <h2 class="fw-bold mb-4 text-center">{{ title }}</h2>
+    <div class="card shadow-sm border-0 rounded-4 p-4 mx-auto" style="max-width: 600px; background-color: #ffffff;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color: #212529;">{{ title }}</h2>
+            <p class="text-muted small">ระบุรายละเอียดสินค้า (หากไม่มีไซส์ประเภทใดให้เว้นว่างไว้)</p>
+        </div>
+
         <form method="POST">
             <div class="mb-3">
-                <label class="form-label fw-bold">Model Name</label>
-                <input type="text" name="model" class="form-control rounded-pill" value="{{ shoe.model if shoe else '' }}" required>
+                <label class="form-label fw-bold">Model Name (ชื่อรุ่น)</label>
+                <input type="text" name="model" class="form-control rounded-pill border-secondary-subtle" 
+                       value="{{ shoe.model if shoe else '' }}" placeholder="เช่น Samba OG Shoes" required>
             </div>
             
             <div class="mb-3">
-                <label class="form-label fw-bold">Brand</label>
-                <input type="text" name="brand" class="form-control rounded-pill" value="{{ shoe.brand if shoe else '' }}" required>
+                <label class="form-label fw-bold">Brand (แบรนด์)</label>
+                <input type="text" name="brand" class="form-control rounded-pill border-secondary-subtle" 
+                       value="{{ shoe.brand if shoe else '' }}" placeholder="เช่น adidas" required>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">Price (฿)</label>
-                    <input type="number" name="price" class="form-control rounded-pill" value="{{ shoe.price if shoe else '' }}" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">Shoe Size (US)</label>
-                    <input type="number" step="0.1" name="size" class="form-control rounded-pill" value="{{ shoe.size if shoe else '' }}" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">Shirt Size</label>
-                    <select name="shirt_size" class="form-select rounded-pill">
-                        <option value="">None</option>
-                        {% for s in ['S', 'M', 'L', 'XL', '2XL'] %}
-                        <option value="{{ s }}" {% if shoe and shoe.shirt_size == s %}selected{% endif %}>{{ s }}</option>
-                        {% endfor %}
-                    </select>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Price (ราคา ฿)</label>
+                <input type="number" name="price" class="form-control rounded-pill border-secondary-subtle" 
+                       value="{{ shoe.price if shoe else '' }}" placeholder="3000" required>
+            </div>
+
+            <hr class="my-4" style="opacity: 0.1;">
+
+            <div class="mb-3 p-3 rounded-4" style="background-color: #fff5f7; border: 1px solid #ffe0e9;">
+                <label class="form-label fw-bold text-dark">
+                    <i class="bi bi-grid-3x3-gap me-1"></i> Shoe Sizes (ไซส์รองเท้าที่มี)
+                </label>
+                <input type="text" name="size" class="form-control rounded-pill border-primary-subtle" 
+                       placeholder="เช่น: 38, 39, 40, 41" 
+                       value="{{ shoe.size if shoe and shoe.size|lower != 'none' else '' }}">
+                <div class="form-text mt-2 text-dark" style="font-size: 0.8rem; opacity: 0.7;">
+                    <strong>วิธีใช้:</strong> คั่นด้วยคอมม่า ( , ) | หากไม่มีให้เว้นว่างไว้
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-bold">Main Image URL (รูปที่ 1)</label>
-                <input type="text" name="img" class="form-control rounded-pill" value="{{ shoe.img if shoe else '' }}" required>
+                <label class="form-label fw-bold text-muted">Shirt Sizes (ไซส์เสื้อ - ถ้ามี)</label>
+                <input type="text" name="shirt_size" class="form-control rounded-pill border-secondary-subtle" 
+                       placeholder="เช่น: S, M, L, XL" 
+                       value="{{ shoe.shirt_size if shoe and shoe.shirt_size|lower != 'none' else '' }}">
+            </div>
+
+            <hr class="my-4" style="opacity: 0.1;">
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Main Image URL (ลิงก์รูปหลัก)</label>
+                <input type="text" name="img" class="form-control rounded-pill border-secondary-subtle" 
+                       value="{{ shoe.img if shoe else '' }}" placeholder="วาง URL รูปภาพหน้าปก" required>
             </div>
 
             <div class="mb-4">
-                <label class="form-label fw-bold">Additional Images (รูปที่ 2-5)</label>
-                <textarea name="extra_imgs" class="form-control rounded-4" rows="5" placeholder="วางลิงก์รูปที่ 2&#10;วางลิงก์รูปที่ 3&#10;วางลิงก์รูปที่ 4&#10;วางลิงก์รูปที่ 5">{{ extra_imgs if extra_imgs else '' }}</textarea>
-                <small class="text-muted">วาง 1 ลิงก์ต่อ 1 บรรทัด (กด Enter เพื่อขึ้นบรรทัดใหม่)</small>
+                <label class="form-label fw-bold">Additional Images (ลิงก์รูปเพิ่มเติม)</label>
+                <textarea name="extra_imgs" class="form-control rounded-4 border-secondary-subtle" rows="4" 
+                          placeholder="วางลิงก์รูปที่ 2&#10;วางลิงก์รูปที่ 3">{{ extra_imgs if extra_imgs else '' }}</textarea>
+                <small class="text-muted d-block mt-1">1 ลิงก์ต่อ 1 บรรทัด</small>
             </div>
 
-            <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 shadow-sm">Save Changes</button>
-            <div class="text-center mt-3">
-                <a href="{{ url_for('index') }}" class="text-muted text-decoration-none">Cancel</a>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold shadow-sm mb-2" 
+                        style="background-color: #ff5c8d; border: none;">
+                    <i class="bi bi-save-fill me-2"></i> บันทึกข้อมูลและเปิดการขาย
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-link text-muted text-decoration-none small">
+                    ยกเลิกการแก้ไข
+                </a>
             </div>
         </form>
     </div>
 </div>
+
+<style>
+    .form-control:focus {
+        border-color: #ff5c8d;
+        box-shadow: 0 0 0 0.25rem rgba(255, 92, 141, 0.15);
+    }
+    body {
+        background-color: #fdfdfd;
+        min-height: 100vh;
+    }
+</style>
 {% endblock %}

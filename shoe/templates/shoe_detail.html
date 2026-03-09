@@ -4,7 +4,6 @@
 <style>
     .detail-wrapper { padding: 40px 0; }
     
-  
     .main-img-holder {
         background: white;
         border-radius: 25px;
@@ -17,76 +16,86 @@
         transition: 0.3s;
     }
 
-    
-    .size-display-group {
+    .size-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+        gap: 12px;
+        margin-top: 15px;
+        max-height: 280px;      
+        overflow-y: auto;       
+        padding-right: 8px;     
+    }
+
+    /* Scrollbar Styling */
+    .size-grid::-webkit-scrollbar { width: 5px; }
+    .size-grid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .size-grid::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+    .size-grid::-webkit-scrollbar-thumb:hover { background: #ff5c8d; }
+
+    .size-item { position: relative; }
+
+    .size-item input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .size-box {
         display: flex;
-        gap: 15px;
-        margin: 25px 0;
-        flex-wrap: wrap;
-    }
-
-    .info-box {
-        flex: 1;
-        min-width: 140px;
-        background: #fbfbfb;
-        padding: 15px;
-        border-radius: 18px;
-        border-left: 6px solid #212529; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-
-    
-    .info-box.shirt-theme {
-        border-left-color: #ff5c8d; 
-        background-color: #fff9fb;
-    }
-
-    .label-title {
-        display: block;
-        color: #888;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 5px;
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        border-radius: 12px;
         font-weight: 700;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }
-
-    .value-bold {
-        font-size: 1.4rem;
-        font-weight: 800;
         color: #212529;
+        transition: 0.2s;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
     }
 
-  
+    .size-item input[type="radio"]:checked + .size-box {
+        border-color: #ff5c8d;
+        background: #ff5c8d;
+        color: white;
+        box-shadow: 0 4px 12px rgba(255, 92, 141, 0.3);
+    }
+
+    .size-box:hover { background: #ececec; }
+    .size-item input[type="radio"]:checked + .size-box:hover { background: #e04a7a; }
+
     .btn-kodflow-action {
-        background: #212529;
+        background: #ff5c8d;
         color: white;
         border-radius: 50px;
-        padding: 14px;
+        padding: 16px;
         text-align: center;
-        text-decoration: none;
         font-weight: 700;
         display: block;
         transition: 0.3s;
         border: none;
+        width: 100%;
+        box-shadow: 0 4px 15px rgba(255, 92, 141, 0.3);
     }
 
     .btn-kodflow-action:hover {
-        background: #ff5c8d;
-        color: white;
+        background: #e04a7a;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(255, 92, 141, 0.3);
+        color: white;
     }
 
     .thumb-nail {
-        width: 75px;
-        height: 75px;
-        object-fit: cover;
-        border-radius: 12px;
-        cursor: pointer;
-        border: 2px solid transparent;
+        width: 75px; height: 75px;
+        object-fit: cover; border-radius: 12px;
+        cursor: pointer; border: 2px solid transparent;
         transition: 0.2s;
     }
-
     .thumb-nail.active { border-color: #ff5c8d; }
 </style>
 
@@ -119,38 +128,64 @@
             <h1 class="fw-bold display-6 mb-1">{{ shoe.model }}</h1>
             <p class="text-muted fs-5 mb-4">{{ shoe.brand }}</p>
             
-            <div class="d-flex align-items-center gap-2 mb-4">
+            <div class="d-flex align-items-center mb-4">
                 <h2 class="fw-bold m-0" style="color: #ff5c8d; font-size: 2.4rem;">฿{{ "{:,.0f}".format(shoe.price) }}</h2>
             </div>
 
             <hr style="opacity: 0.1;">
 
-            <div class="size-display-group">
+            <form action="{{ url_for('checkout', shoe_id=shoe.id) }}" method="POST" class="mt-4">
                 
-                {# แสดง Shoe Size: จะไม่แสดงถ้าค่าเป็น 0.0 #}
-                {% if shoe.size and shoe.size|float > 0 %}
-                <div class="info-box">
-                    <span class="label-title">Shoe Size</span>
-                    <span class="value-bold">{{ shoe.size }} <small class="fw-normal fs-6">US</small></span>
+                {# เช็คว่ามีข้อมูลไซส์อย่างน้อยหนึ่งอย่างค่อยแสดงหัวข้อ #}
+                {% set has_shoe_size = shoe.size and shoe.size.strip() != "" and shoe.size|lower != "none" %}
+                {% set has_shirt_size = shoe.shirt_size and shoe.shirt_size.strip() != "" and shoe.shirt_size|lower != "none" %}
+
+                {% if has_shoe_size or has_shirt_size %}
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-block">Select Size (เลือกไซส์):</label>
+                    
+                    <div class="size-grid">
+                        {# แสดงไซส์รองเท้า #}
+                        {% if has_shoe_size %}
+                            {% for s in shoe.size.split(',') %}
+                                {% set s_trimmed = s | trim %}
+                                {% if s_trimmed %}
+                                <label class="size-item">
+                                    <input type="radio" name="selected_size" value="{{ s_trimmed }} US" required>
+                                    <span class="size-box">
+                                        {{ s_trimmed }} <small class="ms-1 fw-normal" style="font-size: 0.7rem; opacity: 0.8;">US</small>
+                                    </span>
+                                </label>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        {# แสดงไซส์เสื้อ #}
+                        {% if has_shirt_size %}
+                            {% for s in shoe.shirt_size.split(',') %}
+                                {% set shirt_trimmed = s | trim %}
+                                {% if shirt_trimmed %}
+                                <label class="size-item">
+                                    <input type="radio" name="selected_size" value="{{ shirt_trimmed }}" required>
+                                    <span class="size-box">{{ shirt_trimmed }}</span>
+                                </label>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
 
-                {# แสดง Shirt Size: จะแสดงก็ต่อเมื่อมีการเลือกไซส์ที่ไม่ใช่ None #}
-                {% set s_val = shoe.shirt_size | string | trim %}
-                {% if s_val != "" and s_val|lower != "none" and s_val != "None" %}
-                <div class="info-box shirt-theme">
-                    <span class="label-title" style="color: #ff5c8d;">Shirt Size</span>
-                    <span class="value-bold">{{ shoe.shirt_size }}</span>
+                <div class="d-grid gap-3 mt-5">
+                    <button type="submit" class="btn-kodflow-action shadow-sm">
+                        <i class="bi bi-cart-fill me-2"></i> Order Now (สั่งซื้อทันที)
+                    </button>
+                    
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-dark rounded-pill py-3 fw-bold">
+                        <i class="bi bi-chevron-left me-2"></i> Back to Collection
+                    </a>
                 </div>
-                {% endif %}
-
-            </div>
-
-            <div class="d-grid mt-4">
-                <a href="{{ url_for('index') }}" class="btn-kodflow-action shadow-sm">
-                    <i class="bi bi-chevron-left me-2"></i> Back to Collection
-                </a>
-            </div>
+            </form>
         </div>
     </div>
 </div>

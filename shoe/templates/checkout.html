@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-4 text-center">
+                    <h3 class="m-0 fw-bold">ยืนยันการสั่งซื้อ</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded-3">
+                        <img src="{{ shoe.img }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
+                        <div>
+                            <h5 class="fw-bold m-0">{{ shoe.model }}</h5>
+                            <p class="text-muted m-0">{{ shoe.brand }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 d-flex justify-content-between">
+                        <span>ไซส์ที่เลือก:</span>
+                        <span class="fw-bold text-primary">{{ size }}</span>
+                    </div>
+                    <div class="mb-4 d-flex justify-content-between border-top pt-3">
+                        <span class="fs-5">ยอดชำระทั้งสิ้น:</span>
+                        <span class="fs-4 fw-bold" style="color: #ff5c8d;">฿{{ "{:,.0f}".format(shoe.price) }}</span>
+                    </div>
+
+                    <div class="alert alert-info border-0 rounded-3">
+                        <i class="bi bi-info-circle me-2"></i> ระบบจะจัดส่งสินค้าไปยังที่อยู่สมาชิกของคุณ
+                    </div>
+
+                    <button class="btn w-100 py-3 fw-bold text-white rounded-pill" style="background: #212529;" onclick="alert('สั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการ KodFlow')">
+                        ยืนยันและชำระเงิน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
