@@ -16,3 +16,5 @@ typing-extensions==4.15.0
 werkzeug==3.1.5
 gunicorn
 psycopg2-binary
+flask-login
+flask-bcrypt
